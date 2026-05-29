@@ -1,2 +1,11 @@
-# yt-upcomings-web
-This is a web application that uses the YouTube Data API to retrieve and display the update status of a specified YouTube channel.
+# yt-streamlog
+指定したYouTubeチャンネルの直近の更新状況を取得し一覧で表示するwebアプリです
+- YouTube Data API v3を使用します
+- 完全クライアントサイドで動作します。開発者はユーザーデータを一切取得しません
+- [デモページはこちら](https://ducksensor.github.io/yt-upcomings/)です
+
+## 注意
+- このwebアプリを利用するにはGoogleクラウドコンソールから"YouTube Data API v3"のAPIキーを発行する必要があります(無料)
+- YouTubeのAPIには一日の利用上限(10000クォータ)があります
+	- このアプリでは一回のデータ取得で1チャンネルあたり約300クォータ消費します
+	- したがって一日に更新状況を複数回確認する場合、チャンネル数は10以下で利用することをおすすめします

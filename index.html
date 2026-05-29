@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>YT-Upcomings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <button class="menu-btn" id="menuBtn" aria-label="メニューを開く">
+        <span class="menu-icon">
+          <span></span><span></span><span></span>
+        </span>
+      </button>
+      <div class="logo">
+        <span class="logo-icon">▶</span>
+        <span class="logo-text">YT-Upcomings</span>
+      </div>
+    </div>
+    <div class="header-center">
+      <div class="quota-badge" id="quotaBadge" title="本日のAPIクォータ使用量 (上限10,000/日)">
+        <span class="quota-icon">⚡</span>
+        <span class="quota-value" id="quotaValue">0</span>
+        <span class="quota-sep">/</span>
+        <span class="quota-max">10,000</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="refresh-btn" id="refreshBtn" aria-label="データを更新">
+        <span class="refresh-icon">🔄</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Drawer Overlay -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+
+  <!-- Drawer Menu -->
+  <aside class="drawer" id="drawer">
+    <div class="drawer-header">
+      <span class="drawer-title">設定</span>
+      <button class="drawer-close" id="drawerClose">✕</button>
+    </div>
+
+    <div class="drawer-body">
+      <!-- API Key Section -->
+      <section class="setting-section">
+        <div class="section-label">
+          <span class="section-icon">🔑</span>
+          <span>YouTube Data API v3 キー</span>
+        </div>
+        <div class="api-key-input-wrap">
+          <input
+            type="password"
+            id="apiKeyInput"
+            class="text-input"
+            placeholder="AIza..."
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <button class="toggle-visibility" id="toggleApiKey" aria-label="表示切替">👁</button>
+        </div>
+        <button class="save-btn" id="saveApiKey">保存</button>
+        <p class="hint-text" id="apiKeyStatus"></p>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- Quota Section -->
+      <section class="setting-section">
+        <div class="section-label">
+          <span class="section-icon">⚡</span>
+          <span>クォータ使用状況</span>
+        </div>
+        <div class="quota-detail-card">
+          <div class="quota-bar-wrap">
+            <div class="quota-bar-track">
+              <div class="quota-bar-fill" id="quotaBarFill"></div>
+            </div>
+            <div class="quota-bar-labels">
+              <span id="quotaDetailValue">0</span>
+              <span class="quota-bar-max">/ 10,000</span>
+            </div>
+          </div>
+          <div class="quota-reset-info">
+            <span class="quota-reset-label">リセット (PT 00:00)</span>
+            <span class="quota-reset-time" id="quotaResetTime">—</span>
+          </div>
+          <button class="quota-reset-btn" id="quotaResetBtn">カウントをリセット</button>
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- Channel List Section -->
+      <section class="setting-section">
+        <div class="section-label">
+          <span class="section-icon">📡</span>
+          <span>チャンネルリスト</span>
+        </div>
+
+        <div class="add-channel-form">
+          <input
+            type="text"
+            id="channelIdInput"
+            class="text-input"
+            placeholder="チャンネルID (UC...)"
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <input
+            type="text"
+            id="channelNameInput"
+            class="text-input"
+            placeholder="表示名（任意）"
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <div class="color-row">
+            <label class="color-label">カラー</label>
+            <input type="color" id="channelColorInput" class="color-picker" value="#6366f1">
+          </div>
+          <button class="add-btn" id="addChannelBtn">
+            <span>＋ チャンネルを追加</span>
+          </button>
+        </div>
+
+        <div class="channel-list" id="channelList">
+          <!-- populated by JS -->
+        </div>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- Import / Export Section -->
+      <section class="setting-section">
+        <div class="section-label">
+          <span class="section-icon">💾</span>
+          <span>データ管理</span>
+        </div>
+        <div class="ie-row">
+          <button class="ie-btn export-btn" id="exportBtn">
+            <span class="ie-icon">⬆</span> エクスポート
+          </button>
+          <label class="ie-btn import-btn" for="importFile">
+            <span class="ie-icon">⬇</span> インポート
+          </label>
+          <input type="file" id="importFile" accept=".json" style="display:none">
+        </div>
+        <p class="hint-text" id="ieStatus"></p>
+      </section>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- Filter Bar -->
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-chip active" data-filter="all">すべて</button>
+      <button class="filter-chip" data-filter="live">配信中</button>
+      <button class="filter-chip" data-filter="upcoming">予定</button>
+      <button class="filter-chip" data-filter="completed">アーカイブ</button>
+      <button class="filter-chip" data-filter="video">動画</button>
+    </div>
+
+    <!-- Timeline -->
+    <div class="timeline" id="timeline">
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">📺</div>
+        <p class="empty-title">データがありません</p>
+        <p class="empty-sub">チャンネルを設定して<br>🔄 ボタンを押してください</p>
+      </div>
+    </div>
+
+    <!-- Last Updated Footer -->
+    <div class="last-updated-bar" id="lastUpdatedBar">
+      <span class="last-updated-text" id="lastUpdatedText"></span>
+    </div>
+  </main>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-inner">
+      <div class="spinner"></div>
+      <p class="loading-text" id="loadingText">データを取得中...</p>
+      <p class="loading-quota" id="loadingQuota"></p>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
