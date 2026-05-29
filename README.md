@@ -1,4 +1,4 @@
-# yt-streamlog
+# yt-upcomings-web
 指定したYouTubeチャンネルの直近の更新状況を取得し一覧で表示するwebアプリです
 - YouTube Data API v3を使用します
 - 完全クライアントサイドで動作します。開発者はユーザーデータを一切取得しません
